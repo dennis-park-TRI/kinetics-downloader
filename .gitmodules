@@ -1,0 +1,3 @@
+[submodule "tri-det"]
+	path = tri-det
+	url = git@github.awsinternal.tri.global:dennis-park/tri-det.git
