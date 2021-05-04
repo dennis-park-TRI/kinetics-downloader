@@ -1,3 +1,40 @@
-/dataset
-/.idea
+# output dir
+output/
+wandb/
+
+# cluster hostfiles
+hostfiles/
+
+# Data files
+*.jpg
+*.png
+*.txt
+*.avi
+*.mp4
+
+*.json
+*.csv
+
+# compilation and distribution
 __pycache__
+_ext
+*.pyc
+*.so
+build/
+dist/
+
+# pytorch/python/numpy formats
+*.pth
+*.pkl
+*.npy
+*.npz
+
+# ipython/jupyter notebooks
+*.ipynb
+**/.ipynb_checkpoints/
+
+# Editor temporaries
+*.swn
+*.swo
+*.swp
+*~

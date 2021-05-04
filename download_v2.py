@@ -2,8 +2,14 @@
 Usage:
 python download_v2.py \
     --dataset-file kinetics700_2020/train.json \
-    --root-dir /mnt/fsx/datasets/kinetics700_2020 \
-    --num-workers-per-gpu 2
+    --root-dir /mnt/fsx/datasets/kinetics700_2020
+
+ouroboros-train mpirun --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
+        python download_v2.py \
+            --dataset-file kinetics700_2020/train.json \
+            --root-dir /mnt/fsx/datasets/kinetics700_2020 \
+            "\
+        --cross-node
 """
 import argparse
 import json
@@ -70,7 +76,6 @@ class TrivialModel(nn.Module):
 
     def forward(self, x):
         return self.theta * 0.
-        # return x
 
 
 def setup(args):
@@ -96,7 +101,14 @@ def main():
         help="Root directory of target dataset (e.g. '/mnt/fsx/datasets/kinetics700_2020')."
     )
     parser.add_argument(
-        "--num-workers-per-gpu", required=False, default=12, type=int, help="Number of CPU workeres per GPU."
+        "--num-workers-per-gpu", required=False, default=8, type=int, help="Number of CPU workeres per GPU."
+    )
+    parser.add_argument(
+        "--batch-size",
+        required=False,
+        default=32,
+        type=int,
+        help="Batch size. This only determines how often dummy backward() is called."
     )
     args = parser.parse_args()
 
@@ -112,7 +124,8 @@ def main():
             device_ids=[comm.get_local_rank()],
             broadcast_buffers=False,
         )
-        sampler = DistributedSampler(dataset, shuffle=False, drop_last=False)
+        # sampler = DistributedSampler(dataset, shuffle=False, drop_last=False)
+        sampler = DistributedSampler(dataset, shuffle=True, drop_last=False)
     else:
         sampler = None
 
@@ -120,7 +133,7 @@ def main():
         dataset,
         num_workers=args.num_workers_per_gpu,
         sampler=sampler,
-        batch_size=1,
+        batch_size=args.batch_size,
         collate_fn=lambda x: x,
         drop_last=False,
         # batch_sampler=batch_sampler,
