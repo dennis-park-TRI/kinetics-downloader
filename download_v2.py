@@ -1,8 +1,9 @@
 """
 Usage:
 python download_v2.py \
-    --dataset-file kinetics700_2020/train.json \
-    --root-dir /mnt/fsx/datasets/kinetics700_2020
+    --dataset-file /data/datasets/kinetics-mini/train_mini.json \
+    --root-dir /data/datasets/kinetics-mini \
+    --batch-size 1
 
 ouroboros-train mpirun --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
         python download_v2.py \
@@ -114,7 +115,7 @@ def main():
 
     setup(args)
 
-    dataset = KineticsDownloader(args.dataset_file)
+    dataset = KineticsDownloader(args.dataset_file, args.root_dir)
 
     model = TrivialModel().to('cuda')
     distributed = comm.get_world_size() > 1
@@ -141,9 +142,12 @@ def main():
         # pin_memory=True
     )
 
+    success = []
     for x in tqdm(dataloader):
         loss = model(x)
         loss.backward()
+        success.extend(x)
+    import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":
