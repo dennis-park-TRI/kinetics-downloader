@@ -5,10 +5,24 @@ python download_v2.py \
     --root-dir /data/datasets/kinetics-mini \
     --batch-size 1
 
-ouroboros-train mpirun --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
+ouroboros-train mpirun --repo-path ./ --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
         python download_v2.py \
             --dataset-file kinetics700_2020/train.json \
-            --root-dir /mnt/fsx/datasets/kinetics700_2020 \
+            --root-dir /mnt/fsx/datasets/kinetics700_2020_trainval_data \
+            "\
+        --cross-node
+
+ouroboros-train mpirun --repo-path ./ --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
+        python download_v2.py \
+            --dataset-file kinetics700_2020/validate.json \
+            --root-dir /mnt/fsx/datasets/kinetics700_2020_trainval_data \
+            "\
+        --cross-node
+
+ouroboros-train mpirun --repo-path ./ --hostfile hostfiles/hostfile-dennis-download-1.txt --run-command "\
+        python download_v2.py \
+            --dataset-file kinetics700_2020/test.json \
+            --root-dir /mnt/fsx/datasets/kinetics700_2020_test_data \
             "\
         --cross-node
 """
